@@ -52,15 +52,23 @@ function sparqlToGeoJSON(sparqlJSON) {
                                         //invalid wkt!
                                         return {};
                                 }
+                                // Thijs Brentjens: now create a better properties-property of the feature
+                                var props = {};
+                                var allbindings = sparqlJSON.results.bindings[bindingindex];
+                                for (var i in allbindings) {
+                                    // if it is a WKT, then skip it
+                                    if (allbindings[i]["datatype"] != "http://www.opengis.net/ont/geosparql#wktLiteral") {
+                                        props[i] = allbindings[i]["value"];    
+                                    }
 
-
+                                }
                                 var feature = {
                                         "type": "Feature",
                                         "geometry": {
                                                 "type": geometryType,
                                                 "coordinates": eval('(' + coordinates + ')')
                                         },
-                                        "properties": sparqlJSON.results.bindings[bindingindex]
+                                        "properties": props
                                 };
 
                         geojson.features.push(feature);
